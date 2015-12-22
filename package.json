@@ -18,6 +18,9 @@
   "author": "Vlad Khazin <vladimir.khazin@icssolutions.ca>",
   "license": "ISC",
   "homepage": "https://github.com/vkhazin/restify-seed.git",
+  "scripts": {
+    "start": "node app.js"
+  },  
   "dependencies": {
     "bluebird": "^3.0.6",
     "config": "^1.17.1",
