@@ -3,9 +3,8 @@ Dependencies
 **********************************************************************************/
 var restify 	    = require('restify');
 var config 		    = require('config');
-var promise         = require('bluebird');
 var logger          = require('./logger').create(logger);
-var someModule      = require('./someModule').create(config, logger);
+var cache           = require('./cache').create(config, logger);
 /*********************************************************************************/
 
 /**********************************************************************************
@@ -20,6 +19,7 @@ var server 			= restify.createServer();
 Constants
 **********************************************************************************/
 var routePrefix                     = '/v1';
+var headerTtl                       = 'x-ttl-sec'
 /*********************************************************************************/
 
 /**********************************************************************************
@@ -58,31 +58,95 @@ function echo(req, res, next) {
     next();
 }    
 
-//Demo end-point
-server.get({path: routePrefix + '/helloWorld', flags: 'i'}, helloWorld);
-server.get({path: routePrefix + '/helloWorld/:name', flags: 'i'}, helloWorld);
+//Store value
+server.post({path: routePrefix + '/:key', flags: 'i'}, setValue);
 
-function helloWorld(req, res, next) {
+function setValue(req, res, next) {
 
-    someModule.helloWorld(req.params.name)
+    var input = parseRequest(req);
+
+    var key = req.params.key;
+    var value = input.value;
+    var ttlSec = input.ttlSec || config.cache.defaultTtlSec || 3600;
+
+    cache.set(key, value, ttlSec)
         .then(function(result) {
-            //status: 200, body: json
-            res.send(result);     
+            res.send({
+                key: key,
+                ttlSec: ttlSec,
+                value: value
+            });     
         })
         .catch(function(err) {           
-            //log raw error
             logger.error(err);
-            //JSON.stringify unfortunately may fail when error has circular references
-            res.send(new restify.errors.InternalServerError(JSON.stringify(err)));
+            res.send(500, err);
         })
         .done(function(){
-            //processing has finished
+            next();
+        });
+};
+
+//Get value
+server.get({path: routePrefix + '/:key', flags: 'i'}, getValue);
+
+function getValue(req, res, next) {
+
+    var key = req.params.key;
+
+    cache.get(key)
+        .then(function(result) {
+            if (result) {
+                res.send(result);
+            } else {
+                res.send(404, 'Key: {' + key + '} was not found in the cache');
+            }     
+        })
+        .catch(function(err) {           
+            logger.error(err);
+            res.send(500, err);
+        })
+        .done(function(){
+            next();
+        });
+};
+
+//Delete value
+server.del({path: routePrefix + '/:key', flags: 'i'}, deleteValue);
+
+function deleteValue(req, res, next) {
+
+    var key = req.params.key;
+
+    cache.del(key)
+        .then(function(result) {
+            if (result == true) {
+                res.send({ deleted: result});
+            } else {
+                res.send(404, 'Key: {' + key + '} was not found in the cache');
+            }     
+        })
+        .catch(function(err) {           
+            logger.error(err);
+            res.send(500, err);
+        })
+        .done(function(){
             next();
         });
 };
 /*********************************************************************************/
 
-
+/**********************************************************************************
+Functions
+**********************************************************************************/
+function parseRequest(req) {
+    var output = {};
+    if (typeof req.body == 'string') {
+        output = JSON.parse(req.body);
+    } else {
+        output = req.body || {};
+    }
+    return output;
+}
 /**********************************************************************************
 Start the server
 **********************************************************************************/

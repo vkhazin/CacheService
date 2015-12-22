@@ -1,12 +1,11 @@
-# Seed Project for Restful Service using Restify #
+# Cache Service #
 
 # Overview #
-Fast tack creating end-point using restify from the linkedin article:  
-https://www.linkedin.com/pulse/from-0-over-500-reqsec-half-day-vlad-khazin
+Cache service with http end-point for interopability.
 
 # Setup #
 * Install node.js
-* Clone project from terminal window: git clone https://github.com/vkhazin/restify-seed.git
+* Clone project from terminal window: git clone https://vkhazin@bitbucket.org/morneaushepell/cacheservice.git
 * Install dependencies from terminal window: npm install
 * Run from command window: node app.js
 
@@ -26,25 +25,83 @@ GET: http://localhost:3000/v1/echo
 Status: 200  
 ```
 {
-    name: "restify-seed",
-    version: "1.0.0",
-    description: "from 0 to 500 req/sec",
-    author: "Vlad Khazin <vladimir.khazin@icssolutions.ca>",
-    node: "v4.2.2"
+  "name": "cache-service",
+  "version": "1.0.0",
+  "description": "Cache service using http end-point",
+  "author": "Vlad Khazin <vladimir.khazin@icssolutions.ca>",
+  "node": "v4.2.2"
 }
 ```
 
-## helloWorld ##
+## Set ##
 
 ### Request ###
 
-GET: http://localhost:3000/v1/helloWorld/vlad
+POST: http://localhost:3000/v1/myKey
+```
+{
+	"ttlSec": 10,
+	"value": "dummy"
+}
+```
 
 ### Response ###
 
 Status: 200  
 ```
 {
-    msg: "hello vlad!"
+	"key":"035a9363-d381-4651-9dd5-00f9025c0c2b",
+	"ttlSec":3600,
+	"value":
+	{
+		"ttlSec":10,
+		"value":"dummy"
+	}
 }
+```
+
+## Get ##
+
+### Request - Success ###
+
+Get: http://localhost:3000/v1/myKey
+
+### Response ###
+
+Status: 200  
+```
+"dummy"
+```
+
+### Request - Failure ###
+
+Get: http://localhost:3000/v1/myKey
+
+### Response ###
+
+Status: 404  
+```
+"Key: {myKey} was not found in the cache"
+```
+
+## Del ##
+
+### Request ###
+
+DEL: http://localhost:3000/v1/myKey
+
+### Response - Success ###
+
+Status: 200  
+```
+{
+   "deleted":true
+}
+```
+
+### Response - Failure ###
+
+Status: 404  
+```
+"Key: {myKey} was not found in the cache"
 ```

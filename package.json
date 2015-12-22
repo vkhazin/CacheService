@@ -1,14 +1,14 @@
 {
-  "name": "restify-seed",
+  "name": "cache-service",
   "version": "1.0.0",
-  "description": "from 0 to 500 req/sec",
+  "description": "Cache service using http end-point",
   "main": "app.js",
   "scripts": {
     "test": "mocha"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vkhazin/restify-seed.git"
+    "url": "git+https://vkhazin@bitbucket.org/morneaushepell/cacheservice.git"
   },
   "keywords": [
     "restify",
@@ -21,6 +21,7 @@
   "dependencies": {
     "bluebird": "^3.0.6",
     "config": "^1.17.1",
-    "restify": "^4.0.3"
+    "restify": "^4.0.3",
+    "promise-redis": "0.0.5"
   }
 }
