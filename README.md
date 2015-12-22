@@ -105,3 +105,6 @@ Status: 404
 ```
 "Key: {myKey} was not found in the cache"
 ```
+
+# Environments #
+Dev: http://cache-service-dev-ms.end-points.io/
