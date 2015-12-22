@@ -9,9 +9,10 @@ exports.create =  function (cnf, lgr) {
 	var logger 	= lgr;
 
 	var getRedisClient = function () {
+		var url = process.env.REDISCLOUD_URL || config.cache.url;
 	    if (!client) {
-			logger.info('Connecting to ' + config.cache.url);
-    		client = redis.createClient(config.cache.url);
+			logger.info('Connecting to ' + url);
+    		client = redis.createClient(url);
  		}
 		return promise.resolve(client);
 	};
