@@ -107,4 +107,4 @@ Status: 404
 ```
 
 # Environments #
-Dev: http://cache-service-dev-ms.end-points.io/
+Dev: http://cache-service-dev-ms.end-points.io/ (give it a min to warm up when it is slow)
