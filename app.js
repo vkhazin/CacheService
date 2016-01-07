@@ -51,7 +51,7 @@ function echo(req, res, next) {
         name: appInfo.name,
         version: appInfo.version,
         description: appInfo.description,
-        author: appInfo.author,
+        //author: appInfo.author,
         node: process.version
     };
     res.send(info);
