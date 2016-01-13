@@ -30,6 +30,14 @@ exports.create =  function (cnf, lgr) {
 	        		.then(function(client) {
 	        			return client.get(key);
 	        		})
+	        		.then(value => {
+	        			try {
+	        				return JSON.parse(value);
+	        			}
+	        			catch (err) {
+	        				return value;
+	        			}
+	        		})
 	        		.catch(function(err){
 	        			logger.error('error getting value')
 	        			return handleError(err);

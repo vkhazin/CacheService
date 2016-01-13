@@ -68,10 +68,9 @@ describe('cache', function() {
 					return promise.resolve(cache.get(key));
 				})
 				.then(function(result){
-					value = JSON.stringify(value);
 					if (JSON.stringify(result) != JSON.stringify(value)) {
-						logger.error('Exected value: ' + value);
-						logger.error('Actual value: ' + result);
+						logger.error('Exected value: ' + JSON.stringify(value));
+						logger.error('Actual value: ' + JSON.stringify(result));
 						throw new Error('Invalid value');
 					}
 					return promise.resolve(result);
@@ -160,27 +159,55 @@ describe('cache', function() {
 				});
 		});
 
-		// it('Must err when cache is misconfigured', function(done) {
-		// 	var key = Math.random().toString();
-		// 	var value = { value: Math.random().toString()};
-		// 	var ttlSec = 1;
+		it('Set and get object value', function(done) {
+			var key = Math.random().toString();
+			var value = { value: Math.random().toString()};
+			var ttlSec = 10;
 
-		// 	var localConfig 		= require('../config/default.json');
-		// 	localConfig.cache.url	= 'really-bad-url';
-		// 	var localCache 			= require('../cache').create(localConfig, logger);
+			cache.set(key, value, ttlSec)
+				.then(function(result){
+					return cache.get(key);
+				})
+				.then(function(result){
+					if (typeof result === 'object' && JSON.stringify(result) !== JSON.stringify(value)) {
+						logger.error('Expected value: ' + JSON.stringify(value));
+						logger.error('Actual value: ' + JSON.stringify(result) );
+						throw new Error('Invalid value');
+					}
+					return promise.resolve(result);
+				})
+				.catch(function(err){
+					throw err	
+				})
+				.done(function(){
+					done();
+				});
+		});
 
-		// 	localCache.get(key)
-		// 		.then(function(result){
-		// 			logger.error(result);
-		// 			throw new Error('Should have failed');
-		// 		})
-		// 		.catch(function(err){
-		// 			logger.error(err);
-		// 			return promise.resolve(null);
-		// 		})
-		// 		.done(function(){
-		// 			done();
-		// 		});
-		// });
+		it('Set and get string value', function(done) {
+			var key = Math.random().toString();
+			var value = Math.random().toString();
+			var ttlSec = 10;
+
+			cache.set(key, value, ttlSec)
+				.then(function(result){
+					return cache.get(key);
+				})
+				.then(function(result){
+					if (typeof result === 'string' && result !== value) {
+						logger.error('Expected value: ' + JSON.stringify(value));
+						logger.error('Actual value: ' + JSON.stringify(result) );
+						throw new Error('Invalid value');
+					}
+					return promise.resolve(result);
+				})
+				.catch(function(err){
+					throw err	
+				})
+				.done(function(){
+					done();
+				});
+		});
+
 	});
 });
